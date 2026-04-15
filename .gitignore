@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Resultado temporário gerado em runtime (não versionar)
+resultado_zoneamento_temp.parquet
+
+# Arquivos grandes (shapefiles, CSVs intermediários)
+BR_Municipios_2025/
+*.csv
+*.json
+*.xlsx
+*.zip
+*.tar.gz
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs e checkpoints do projeto
+*.log
+*checkpoint*.json
+altitude_checkpoint*.json
