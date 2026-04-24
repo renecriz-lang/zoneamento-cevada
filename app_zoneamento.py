@@ -4,12 +4,57 @@ Arquitetura: Processamento → Arquivo Temporário → Visualização
 """
 
 import os
+import csv
+import datetime
 from collections import defaultdict
 import numpy as np
 import pandas as pd
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONTADOR DE ACESSOS
+# ─────────────────────────────────────────────────────────────────────────────
+_LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "acessos_log.csv")
+_ADMIN_SENHA = "cevada2025"  # troque aqui para a senha que quiser
+
+
+def _registrar_acesso() -> None:
+    """Grava uma linha no log a cada nova sessão."""
+    novo = not os.path.exists(_LOG_FILE)
+    with open(_LOG_FILE, "a", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        if novo:
+            w.writerow(["data_hora", "data", "hora"])
+        agora = datetime.datetime.now()
+        w.writerow([agora.strftime("%Y-%m-%d %H:%M:%S"),
+                    agora.strftime("%Y-%m-%d"),
+                    agora.strftime("%H:%M")])
+
+
+def _painel_admin() -> None:
+    """Painel de estatísticas de acesso — visível só com senha."""
+    with st.sidebar.expander("⚙️ Config"):
+        senha = st.text_input("Senha", type="password", key="_admin_pw")
+        if senha != _ADMIN_SENHA:
+            return
+        if not os.path.exists(_LOG_FILE):
+            st.info("Nenhum acesso registrado ainda.")
+            return
+        df_log = pd.read_csv(_LOG_FILE, parse_dates=["data_hora"])
+        total = len(df_log)
+        hoje = datetime.date.today().strftime("%Y-%m-%d")
+        hoje_ct = (df_log["data"] == hoje).sum()
+        st.success(f"Total de acessos: **{total}**")
+        st.info(f"Hoje ({hoje}): **{hoje_ct}**")
+        por_dia = (
+            df_log.groupby("data")
+            .size()
+            .reset_index(name="acessos")
+            .sort_values("data", ascending=False)
+        )
+        st.dataframe(por_dia, use_container_width=True, hide_index=True)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CONSTANTES — Estrutura dos Decêndios (ano não-bissexto)
@@ -360,6 +405,12 @@ st.set_page_config(
     page_icon="🌾",
     layout="wide",
 )
+
+# Registra acesso uma vez por sessão e exibe painel admin na sidebar
+if "acesso_registrado" not in st.session_state:
+    _registrar_acesso()
+    st.session_state["acesso_registrado"] = True
+_painel_admin()
 
 st.title("🌾 Zoneamento Agroclimático da Cevada")
 st.markdown(
