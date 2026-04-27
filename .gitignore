@@ -35,6 +35,25 @@ BR_Municipios_2025/
 *.zip
 *.tar.gz
 
+# Pipeline de dados local (128 MB — não vai ao GitHub)
+NOVO APP/
+
+# Dados brutos de interpolação
+interpolacao_completa_temperatura_156_semanas/
+output_interpolacao/
+dados_altitude_topodata/
+pedo_area/
+teste_precipitacao_sem1/
+
+# Binários e modelos treinados
+*.joblib
+*.shp
+*.dbf
+*.shx
+*.cpg
+*.prj
+*.png
+
 # Sistema operacional
 .DS_Store
 Thumbs.db
